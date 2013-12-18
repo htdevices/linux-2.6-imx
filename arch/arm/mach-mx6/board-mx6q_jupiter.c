@@ -34,6 +34,7 @@
 #include <linux/regulator/machine.h>
 #include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
+#include <linux/fec.h>
 #include <linux/gpio.h>
 
 #include <mach/common.h>
@@ -64,6 +65,16 @@ static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
    .delay_line = 0,
    .runtime_pm = 1,
    .cd_type = ESDHC_CD_CONTROLLER,
+};
+
+static int mx6q_jupiter_fec_phy_init(struct phy_device *phydev) {
+   /* todo review if needed to renable phy settings */
+   return 0;
+}
+
+static struct fec_platform_data mx6q_jupiter_fec_data __initdata = {
+   .init = mx6q_jupiter_fec_phy_init,
+   .phy = PHY_INTERFACE_MODE_RMII,
 };
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
@@ -118,6 +129,8 @@ static void __init mx6_board_init(void)
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
 	/* SD1 */
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
+	/* ethernet phy */
+	imx6_init_fec(mx6q_jupiter_fec_data);
 }
 
 extern void __iomem *twd_base;
