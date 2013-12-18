@@ -131,6 +131,11 @@ static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
     .delay_time = 80,
 };
 
+static const struct anatop_thermal_platform_data
+   mx6q_jupiter_anatop_thermal_data __initconst = {
+       .name = "anatop_thermal",
+};
+
 static inline void mx6q_jupiter_init_uart(void)
 {
 	imx6q_add_imx_uart(3, NULL);
@@ -180,6 +185,7 @@ static void __init mx6_board_init(void)
     mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
 
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
+    imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
 	/* SD1 */
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	/* ethernet phy */
