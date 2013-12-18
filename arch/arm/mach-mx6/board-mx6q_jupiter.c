@@ -100,6 +100,13 @@ static struct ipuv3_fb_platform_data mx6q_jupiter_fb_data[] = {
    },
 };
 
+static struct fsl_mxc_ldb_platform_data mx6q_jupiter_ldb_data = {
+   .ipu_id = 0,
+   .disp_id = 0,
+   .ext_ref = 1,
+   .mode = LDB_SEP0,
+};
+
 static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
     .reg_id = "VDDCORE",
     .soc_id = "VDDSOC",
@@ -141,6 +148,9 @@ static void __init mx6_board_init(void)
 
 	imx6q_add_ipuv3(0, &ipu_data[0]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
+    imx6q_add_vdoa();
+    imx6q_add_ldb(&mx6q_jupiter_ldb_data);
+    imx6q_add_v4l2_output(0);
     /* reuest pmic interrupt gpio */
     gpio_request(MX6Q_JUPITER_PMIC_INT, "pfuze-int");
     gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
