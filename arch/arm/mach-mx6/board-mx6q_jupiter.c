@@ -37,6 +37,7 @@
 #include <linux/fec.h>
 #include <linux/gpio.h>
 
+#include <mach/ipu-v3.h>
 #include <mach/common.h>
 #include <mach/hardware.h>
 #include <mach/iomux-mx6q.h>
@@ -81,6 +82,24 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
 };
 
+static struct imx_ipuv3_platform_data ipu_data[] = {
+   {
+       .rev = 4,
+       .csi_clk[0] = "clko_clk",
+       .bypass_reset = false,
+   },
+};
+
+static struct ipuv3_fb_platform_data mx6q_jupiter_fb_data[] = {
+   {
+       .disp_dev = "ldb",
+       .interface_pix_fmt = IPU_PIX_FMT_RGB666,
+       .mode_str = "LDB-XGA",
+       .default_bpp = 16,
+       .int_clk = false,
+   },
+};
+
 static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
     .reg_id = "VDDCORE",
     .soc_id = "VDDSOC",
@@ -120,6 +139,8 @@ static void __init mx6_board_init(void)
 
 	mx6q_jupiter_init_uart();
 
+	imx6q_add_ipuv3(0, &ipu_data[0]);
+	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
     /* reuest pmic interrupt gpio */
     gpio_request(MX6Q_JUPITER_PMIC_INT, "pfuze-int");
     gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
