@@ -35,6 +35,7 @@
 #include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
 #include <linux/fec.h>
+#include <linux/ion.h>
 #include <linux/gpio.h>
 
 #include <mach/ipu-v3.h>
@@ -80,6 +81,17 @@ static struct fec_platform_data mx6q_jupiter_fec_data __initdata = {
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
+};
+
+static struct ion_platform_data imx_ion_data = {
+   .nr = 1,
+   .heaps = {
+       {
+       .type = ION_HEAP_TYPE_CARVEOUT,
+       .name = "vpu_ion",
+       .size = SZ_64M,
+       },
+   },
 };
 
 static struct imx_ipuv3_platform_data ipu_data[] = {
@@ -205,6 +217,12 @@ static void __init mx6_board_init(void)
     imx6q_add_imx2_wdt(0, NULL);
     imx6q_add_dma();
 
+    if (imx_ion_data.heaps[0].size) {
+        imx6q_add_ion(0, &imx_ion_data,
+            sizeof(imx_ion_data) +
+            sizeof(struct ion_platform_heap));
+    }
+
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
     imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
@@ -252,6 +270,15 @@ static void __init mx6q_reserve(void)
 		memblock_remove(phys, imx6q_gpu_pdata.reserved_mem_size);
 		imx6q_gpu_pdata.reserved_mem_base = phys;
 	}
+#endif
+
+#if defined(CONFIG_ION)
+    if (imx_ion_data.heaps[0].size) {
+        phys = memblock_alloc(imx_ion_data.heaps[0].size, SZ_4K);
+        memblock_free(phys, imx_ion_data.heaps[0].size);
+        memblock_remove(phys, imx_ion_data.heaps[0].size);
+        imx_ion_data.heaps[0].base = phys;
+    }
 #endif
 }
 
