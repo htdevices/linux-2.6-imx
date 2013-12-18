@@ -230,6 +230,12 @@ static void __init mx6_board_init(void)
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	/* ethernet phy */
 	imx6_init_fec(mx6q_jupiter_fec_data);
+
+    imx6q_add_busfreq();
+
+    imx6q_add_perfmon(0);
+    imx6q_add_perfmon(1);
+    imx6q_add_perfmon(2);
 }
 
 extern void __iomem *twd_base;
