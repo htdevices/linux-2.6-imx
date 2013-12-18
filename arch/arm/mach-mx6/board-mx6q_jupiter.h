@@ -49,6 +49,8 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	/* I2C3 */
 	MX6Q_PAD_GPIO_6__I2C3_SDA,
 	MX6Q_PAD_GPIO_3__I2C3_SCL,
+	/* PMIC GPIO interrupt */
+	MX6Q_PAD_GPIO_18__GPIO_7_13,
 };
 
 #endif
