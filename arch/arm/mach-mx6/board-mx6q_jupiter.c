@@ -136,6 +136,22 @@ static const struct anatop_thermal_platform_data
        .name = "anatop_thermal",
 };
 
+static void mx6q_jupiter_suspend_enter(void)
+{
+   /* enter suspend */
+}
+
+static void mx6q_jupiter_suspend_exit(void)
+{
+   /* exit suspend */
+}
+
+static const struct pm_platform_data mx6q_jupiter_pm_data __initconst = {
+   .name = "imx_pm",
+   .suspend_enter = mx6q_jupiter_suspend_enter,
+   .suspend_exit  = mx6q_jupiter_suspend_exit,
+};
+
 static inline void mx6q_jupiter_init_uart(void)
 {
 	imx6q_add_imx_uart(3, NULL);
@@ -186,6 +202,7 @@ static void __init mx6_board_init(void)
 
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
+    imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
 	/* SD1 */
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	/* ethernet phy */
