@@ -51,6 +51,7 @@
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
+#define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 10)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
@@ -167,6 +168,7 @@ static const struct pm_platform_data mx6q_jupiter_pm_data __initconst = {
 
 static inline void mx6q_jupiter_init_uart(void)
 {
+	imx6q_add_imx_uart(2, NULL);
 	imx6q_add_imx_uart(3, NULL);
 }
 
