@@ -26,20 +26,59 @@
 #include <linux/i2c.h>
 #include <linux/kernel.h>
 #include <linux/memblock.h>
+#include <linux/fsl_devices.h>
+#include <linux/platform_device.h>
+#include <linux/pmic_external.h>
+#include <linux/pmic_status.h>
+#include <linux/regulator/consumer.h>
+#include <linux/regulator/machine.h>
+#include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
+#include <linux/gpio.h>
 
 #include <mach/common.h>
 #include <mach/hardware.h>
 #include <mach/iomux-mx6q.h>
 #include <mach/iomux-v3.h>
+#include <mach/mxc_dvfs.h>
 
 #include "crm_regs.h"
 #include "devices-imx6q.h"
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
+#define MX6Q_JUPITER_PMIC_INT IMX_GPIO_NR(7, 13)
+
+extern char *gp_reg_id;
+extern char *soc_reg_id;
+extern int __init mx6q_jupiter_init_pfuze100(u32 int_gpio);
+
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
+};
+
+static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
+    .reg_id = "VDDCORE",
+    .soc_id = "VDDSOC",
+    .clk1_id = "cpu_clk",
+    .clk2_id = "gpc_dvfs_clk",
+    .gpc_cntr_offset = MXC_GPC_CNTR_OFFSET,
+    .ccm_cdcr_offset = MXC_CCM_CDCR_OFFSET,
+    .ccm_cacrr_offset = MXC_CCM_CACRR_OFFSET,
+    .ccm_cdhipr_offset = MXC_CCM_CDHIPR_OFFSET,
+    .prediv_mask = 0x1F800,
+    .prediv_offset = 11,
+    .prediv_val = 3,
+    .div3ck_mask = 0xE0000000,
+    .div3ck_offset = 29,
+    .div3ck_val = 2,
+    .emac_val = 0x08,
+    .upthr_val = 25,
+    .dnthr_val = 9,
+    .pncthr_val = 33,
+    .upcnt_val = 10,
+    .dncnt_val = 10,
+    .delay_time = 80,
 };
 
 static inline void mx6q_jupiter_init_uart(void)
@@ -52,7 +91,18 @@ static void __init mx6_board_init(void)
 	mxc_iomux_v3_setup_multiple_pads(mx6q_jupiter_pads,
 			ARRAY_SIZE(mx6q_jupiter_pads));
 
+	gp_reg_id =  mx6q_jupiter_dvfscore_data.reg_id;
+	soc_reg_id = mx6q_jupiter_dvfscore_data.soc_id;
+
 	mx6q_jupiter_init_uart();
+
+    /* reuest pmic interrupt gpio */
+    gpio_request(MX6Q_JUPITER_PMIC_INT, "pfuze-int");
+    gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
+    /* enable pfuze regulators */
+    mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
+
+    imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
 }
 
 extern void __iomem *twd_base;
