@@ -200,6 +200,11 @@ static void __init mx6_board_init(void)
     /* enable pfuze regulators */
     mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
 
+    imx6q_add_vpu();
+    imx6q_add_otp();
+    imx6q_add_imx2_wdt(0, NULL);
+    imx6q_add_dma();
+
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
     imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
