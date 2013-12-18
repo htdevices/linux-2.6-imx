@@ -39,6 +39,7 @@
 #include <linux/gpio.h>
 
 #include <mach/ipu-v3.h>
+#include <mach/viv_gpu.h>
 #include <mach/common.h>
 #include <mach/hardware.h>
 #include <mach/iomux-mx6q.h>
@@ -80,7 +81,7 @@ static struct fec_platform_data mx6q_jupiter_fec_data __initdata = {
 };
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
-	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
+	.reserved_mem_size = SZ_128M + SZ_64M,
 };
 
 static struct ion_platform_data imx_ion_data = {
@@ -226,6 +227,7 @@ static void __init mx6_board_init(void)
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
     imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
+    imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 	/* SD1 */
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	/* ethernet phy */
