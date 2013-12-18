@@ -47,11 +47,24 @@
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
-#define MX6Q_JUPITER_PMIC_INT IMX_GPIO_NR(7, 13)
+#define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
+#define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 10)
+#define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
 extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern int __init mx6q_jupiter_init_pfuze100(u32 int_gpio);
+
+static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
+   .cd_gpio = MX6Q_JUPITER_SD1_CD,
+   .wp_gpio = MX6Q_JUPITER_SD1_WP,
+   .keep_power_at_suspend = 1,
+   .support_18v = 1,
+   .support_8bit = 0,
+   .delay_line = 0,
+   .runtime_pm = 1,
+   .cd_type = ESDHC_CD_CONTROLLER,
+};
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 	.reserved_mem_size = SZ_128M + SZ_64M - SZ_16M,
@@ -103,6 +116,8 @@ static void __init mx6_board_init(void)
     mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
 
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
+	/* SD1 */
+	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 }
 
 extern void __iomem *twd_base;
