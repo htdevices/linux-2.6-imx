@@ -136,6 +136,24 @@ static inline void mx6q_jupiter_init_uart(void)
 	imx6q_add_imx_uart(3, NULL);
 }
 
+#ifdef CONFIG_ANDROID_RAM_CONSOLE
+static struct resource ram_console_resource = {
+   .name = "android ram console",
+   .flags = IORESOURCE_MEM,
+};
+
+static struct platform_device android_ram_console = {
+   .name = "ram_console",
+   .num_resources = 1,
+   .resource = &ram_console_resource,
+};
+
+static int __init imx6x_add_ram_console(void)
+{
+   return platform_device_register(&android_ram_console);
+}
+#endif
+
 static void __init mx6_board_init(void)
 {
 	mxc_iomux_v3_setup_multiple_pads(mx6q_jupiter_pads,
@@ -145,6 +163,10 @@ static void __init mx6_board_init(void)
 	soc_reg_id = mx6q_jupiter_dvfscore_data.soc_id;
 
 	mx6q_jupiter_init_uart();
+
+#ifdef CONFIG_ANDROID_RAM_CONSOLE
+    imx6x_add_ram_console();
+#endif
 
 	imx6q_add_ipuv3(0, &ipu_data[0]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
@@ -184,8 +206,17 @@ static struct sys_timer mx6_timer = {
 
 static void __init mx6q_reserve(void)
 {
-#if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
 	phys_addr_t phys;
+
+#ifdef CONFIG_ANDROID_RAM_CONSOLE
+    phys = memblock_alloc_base(SZ_128K, SZ_4K, SZ_1G);
+    memblock_remove(phys, SZ_128K);
+    memblock_free(phys, SZ_128K);
+    ram_console_resource.start = phys;
+    ram_console_resource.end   = phys + SZ_128K - 1;
+#endif
+
+#if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
 
 	if (imx6q_gpu_pdata.reserved_mem_size) {
 		phys = memblock_alloc_base(imx6q_gpu_pdata.reserved_mem_size,
