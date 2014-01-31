@@ -21,9 +21,9 @@
 #include <mach/iomux-mx6q.h>
 
 static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
-	/* UART4 for debug */
-	MX6Q_PAD_KEY_COL0__UART4_TXD,
-	MX6Q_PAD_KEY_ROW0__UART4_RXD,
+	/* UART1 for debug */
+	MX6Q_PAD_SD3_DAT7__UART1_TXD,
+	MX6Q_PAD_SD3_DAT6__UART1_RXD,
 	/* SD1 4 bit */
 	MX6Q_PAD_SD1_CLK__USDHC1_CLK,
 	MX6Q_PAD_SD1_CMD__USDHC1_CMD,
