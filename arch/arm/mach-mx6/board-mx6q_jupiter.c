@@ -168,8 +168,8 @@ static const struct pm_platform_data mx6q_jupiter_pm_data __initconst = {
 
 static inline void mx6q_jupiter_init_uart(void)
 {
+	imx6q_add_imx_uart(0, NULL);
 	imx6q_add_imx_uart(2, NULL);
-	imx6q_add_imx_uart(3, NULL);
 }
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
@@ -253,7 +253,7 @@ static void __init mx6_timer_init(void)
 	mx6_clocks_init(32768, 24000000, 0, 0);
 
 	uart_clk = clk_get_sys("imx-uart.0", NULL);
-	early_console_setup(UART4_BASE_ADDR, uart_clk);
+	early_console_setup(UART1_BASE_ADDR, uart_clk);
 }
 
 static struct sys_timer mx6_timer = {
