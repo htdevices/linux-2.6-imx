@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 High Technology Devices LLC.
+ * Copyright (C) 2013-2014 High Technology Devices LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@
 
 #define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
-#define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 10)
+#define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
 extern char *gp_reg_id;

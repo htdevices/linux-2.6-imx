@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 High Technology Devices LLC.
+ * Copyright (C) 2013-2014 High Technology Devices LLC.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_SD1_DAT2__USDHC1_DAT2,
 	MX6Q_PAD_SD1_DAT3__USDHC1_DAT3,
 	MX6Q_PAD_KEY_COL1__USDHC1_VSELECT,
-	MX6Q_PAD_KEY_COL2__GPIO_4_10,
+	MX6Q_PAD_KEY_ROW2__GPIO_4_11,
 	MX6Q_PAD_KEY_ROW1__GPIO_4_9,
 	/* Ethernet RMII mode */
 	MX6Q_PAD_ENET_MDC__ENET_MDC,
