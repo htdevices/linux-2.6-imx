@@ -72,6 +72,15 @@ static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
    .cd_type = ESDHC_CD_CONTROLLER,
 };
 
+static const struct esdhc_platform_data mx6q_jupiter_sd4_data __initconst = {
+	.always_present = 1,
+	.keep_power_at_suspend = 1,
+	.support_18v = 1,
+	.support_8bit = 1,
+	.delay_line = 0,
+	.cd_type = ESDHC_CD_PERMANENT,
+};
+
 static struct regulator_consumer_supply mx6q_jupiter_vmmc_consumers[] = {
 	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.0"),
 };
@@ -255,7 +264,8 @@ static void __init mx6_board_init(void)
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
     imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
     imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
-	/* SD1 */
+	/* SD, eMMC as mmcblk0 */
+	imx6q_add_sdhci_usdhc_imx(3, &mx6q_jupiter_sd4_data);
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	platform_device_register(&mx6q_jupiter_vmmc_reg_devices);
 	/* ethernet phy */
