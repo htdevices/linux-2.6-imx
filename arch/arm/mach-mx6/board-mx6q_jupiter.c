@@ -83,6 +83,7 @@ static const struct esdhc_platform_data mx6q_jupiter_sd4_data __initconst = {
 
 static struct regulator_consumer_supply mx6q_jupiter_vmmc_consumers[] = {
 	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.0"),
+	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.3"),
 };
 
 static struct regulator_init_data mx6q_jupiter_vmmc_init = {
