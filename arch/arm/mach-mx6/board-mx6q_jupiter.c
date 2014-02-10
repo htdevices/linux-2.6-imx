@@ -30,6 +30,7 @@
 #include <linux/platform_device.h>
 #include <linux/pmic_external.h>
 #include <linux/pmic_status.h>
+#include <linux/regulator/fixed.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/anatop-regulator.h>
@@ -69,6 +70,30 @@ static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
    .delay_line = 0,
    .runtime_pm = 1,
    .cd_type = ESDHC_CD_CONTROLLER,
+};
+
+static struct regulator_consumer_supply mx6q_jupiter_vmmc_consumers[] = {
+	REGULATOR_SUPPLY("vmmc", "sdhci-esdhc-imx.0"),
+};
+
+static struct regulator_init_data mx6q_jupiter_vmmc_init = {
+	.num_consumer_supplies = ARRAY_SIZE(mx6q_jupiter_vmmc_consumers),
+	.consumer_supplies = mx6q_jupiter_vmmc_consumers,
+};
+
+static struct fixed_voltage_config mx6q_jupiter_vmmc_reg_config = {
+	.supply_name = "vmmc",
+	.microvolts = 3300000,
+	.gpio = -1,
+	.init_data = &mx6q_jupiter_vmmc_init,
+};
+
+static struct platform_device mx6q_jupiter_vmmc_reg_devices = {
+	.name = "reg-fixed-voltage",
+	.id = 3,
+	.dev = {
+		.platform_data = &mx6q_jupiter_vmmc_reg_config,
+	},
 };
 
 static int mx6q_jupiter_fec_phy_init(struct phy_device *phydev) {
@@ -232,6 +257,7 @@ static void __init mx6_board_init(void)
     imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 	/* SD1 */
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
+	platform_device_register(&mx6q_jupiter_vmmc_reg_devices);
 	/* ethernet phy */
 	imx6_init_fec(mx6q_jupiter_fec_data);
 
