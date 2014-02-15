@@ -84,6 +84,10 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_CSI0_DAT5__AUDMUX_AUD3_TXD,
 	MX6Q_PAD_CSI0_DAT6__AUDMUX_AUD3_TXFS,
 	MX6Q_PAD_CSI0_DAT7__AUDMUX_AUD3_RXD,
+	/* USB control pads */
+	MX6Q_PAD_GPIO_1__USBOTG_ID,
+	MX6Q_PAD_EIM_D16__GPIO_3_16,
+	MX6Q_PAD_EIM_D17__GPIO_3_17,
 };
 
 #endif

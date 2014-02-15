@@ -52,6 +52,8 @@
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
+#define MX6Q_JUPITER_USB_OTG_ON IMX_GPIO_NR(3, 16)
+#define MX6Q_JUPITER_USB_OTG_OC IMX_GPIO_NR(3, 17)
 #define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
@@ -207,6 +209,39 @@ static inline void mx6q_jupiter_init_uart(void)
 	imx6q_add_imx_uart(2, NULL);
 }
 
+static void mx6q_jupiter_usbotg_vbus(bool on)
+{
+	if (on)
+		gpio_set_value(MX6Q_JUPITER_USB_OTG_ON, 1);
+	else
+		gpio_set_value(MX6Q_JUPITER_USB_OTG_ON, 0);
+}
+
+static void __init mx6q_jupiter_init_usb(void)
+{
+	int ret = 0;
+	imx_otg_base = MX6_IO_ADDRESS(MX6Q_USB_OTG_BASE_ADDR);
+
+	ret = gpio_request(MX6Q_JUPITER_USB_OTG_ON, "otg-on");
+	if (ret) {
+		printk(KERN_ERR "failed to get GPIO MX6Q_JUPITER_USB_OTG_ON"
+			" %d\n", ret);
+		return;
+	}
+	gpio_direction_output(MX6Q_JUPITER_USB_OTG_ON, 0);
+
+	ret = gpio_request(MX6Q_JUPITER_USB_OTG_OC, "otg-oc");
+	if (ret) {
+		printk(KERN_ERR "failed to get GPIO MX6Q_JUPITER_USB_OTG_OC:"
+			" %d\n", ret);
+		return;
+	}
+	gpio_direction_input(MX6Q_JUPITER_USB_OTG_OC);
+
+	mxc_iomux_set_gpr_register(1, 13, 1, 0);
+	mx6_set_otghost_vbus_func(mx6q_jupiter_usbotg_vbus);
+}
+
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
 static struct resource ram_console_resource = {
    .name = "android ram console",
@@ -269,6 +304,7 @@ static void __init mx6_board_init(void)
 	imx6q_add_sdhci_usdhc_imx(3, &mx6q_jupiter_sd4_data);
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
 	platform_device_register(&mx6q_jupiter_vmmc_reg_devices);
+	mx6q_jupiter_init_usb();
 	/* ethernet phy */
 	imx6_init_fec(mx6q_jupiter_fec_data);
 
