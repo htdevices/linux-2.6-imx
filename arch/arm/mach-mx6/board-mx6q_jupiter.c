@@ -138,6 +138,10 @@ static struct imx_ipuv3_platform_data ipu_data[] = {
        .rev = 4,
        .csi_clk[0] = "clko_clk",
        .bypass_reset = false,
+   }, {
+       .rev = 4,
+       .csi_clk[0] = "clko_clk",
+       .bypass_reset = false,
    },
 };
 
@@ -275,6 +279,7 @@ static void __init mx6_board_init(void)
 #endif
 
 	imx6q_add_ipuv3(0, &ipu_data[0]);
+	imx6q_add_ipuv3(1, &ipu_data[1]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
     imx6q_add_vdoa();
     imx6q_add_ldb(&mx6q_jupiter_ldb_data);
