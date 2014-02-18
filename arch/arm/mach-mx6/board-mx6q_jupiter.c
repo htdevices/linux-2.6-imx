@@ -16,10 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <asm/irq.h>
+#include <asm/setup.h>
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
+#include <linux/types.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -338,6 +341,54 @@ static struct sys_timer mx6_timer = {
 	.init = mx6_timer_init,
 };
 
+static void __init mx6_board_fixup(struct machine_desc *desc, struct tag *tags,
+		char **cmdline, struct meminfo *mi)
+{
+	char *str;
+	struct tag *t;
+	int i = 0;
+	struct ipuv3_fb_platform_data *pdata_fb = mx6q_jupiter_fb_data;
+
+	for_each_tag(t, tags) {
+	if (t->hdr.tag == ATAG_CMDLINE) {
+		str = t->u.cmdline.cmdline;
+		str = strstr(str, "fbmem=");
+		if (str != NULL) {
+			str += 6;
+			pdata_fb[i++].res_size[0] = memparse(str, &str);
+			while (*str == ',' && i < ARRAY_SIZE(mx6q_jupiter_fb_data)) {
+				str++;
+				mx6q_jupiter_fb_data[i++].res_size[0] =
+					memparse(str, &str);
+			}
+		}
+		/* ion reserve memory */
+		str = t->u.cmdline.cmdline;
+		str = strstr(str, "iomem=");
+		if (str != NULL) {
+			str += 7;
+			imx_ion_data.heaps[0].size = memparse(str, &str);
+		}
+		/* Primary frabuffer address */
+		str = t->u.cmdline.cmdline;
+		str = strstr(str, "fb0base=");
+		if (str != NULL) {
+			str += 8;
+			pdata_fb[0].res_base[0] =
+				simple_strtol(str, &str, 16);
+		}
+		/* GPU reserve memory */
+		str = t->u.cmdline.cmdline;
+		str = strstr(str, "gpumem=");
+		if (str != NULL) {
+			str += 7;
+			imx6q_gpu_pdata.reserved_mem_size = memparse(str, &str);
+		}
+		break;
+	}
+	}
+}
+
 static void __init mx6q_reserve(void)
 {
 	phys_addr_t phys;
@@ -372,6 +423,7 @@ static void __init mx6q_reserve(void)
 
 MACHINE_START(MX6Q_JUPITER, "Freescale i.MX6Q Jupiter Board")
 	.boot_params = MX6_PHYS_OFFSET + 0x100,
+	.fixup = mx6_board_fixup,
 	.map_io = mx6_map_io,
 	.init_irq = mx6_init_irq,
 	.init_machine = mx6_board_init,
