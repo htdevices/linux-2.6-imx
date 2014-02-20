@@ -33,6 +33,7 @@
 #include <linux/platform_device.h>
 #include <linux/pmic_external.h>
 #include <linux/pmic_status.h>
+#include <linux/pwm_backlight.h>
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
@@ -60,6 +61,7 @@
 #define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
+#define MX6Q_JUPITER_BKLT_EN	IMX_GPIO_NR(4, 15)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
 extern char *gp_reg_id;
@@ -163,6 +165,14 @@ static struct fsl_mxc_ldb_platform_data mx6q_jupiter_ldb_data = {
    .disp_id = 0,
    .ext_ref = 1,
    .mode = LDB_SEP0,
+};
+
+/* Backlight PWM for Orient Display */
+static struct platform_pwm_backlight_data mx6q_jupiter_pwm_backight_data = {
+	.pwm_id = 0,
+	.max_brightness = 255,
+	.dft_brightness = 128,
+	.pwm_period_ns = 1000,
 };
 
 static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
@@ -292,6 +302,12 @@ static void __init mx6_board_init(void)
     gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
     /* enable pfuze regulators */
     mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
+
+	gpio_request(MX6Q_JUPITER_BKLT_EN, "bklt-en0");
+	gpio_direction_output(MX6Q_JUPITER_BKLT_EN, 1);
+	gpio_export(MX6Q_JUPITER_BKLT_EN);
+	imx6q_add_mxc_pwm(0);
+	imx6q_add_mxc_pwm_backlight(0, &mx6q_jupiter_pwm_backight_data);
 
     imx6q_add_vpu();
     imx6q_add_otp();
