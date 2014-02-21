@@ -40,7 +40,9 @@
 #include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
 #include <linux/fec.h>
+#if defined(CONFIG_ION)
 #include <linux/ion.h>
+#endif
 #include <linux/gpio.h>
 
 #include <mach/ipu-v3.h>
@@ -128,6 +130,7 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 	.reserved_mem_size = SZ_128M + SZ_64M,
 };
 
+#if defined(CONFIG_ION)
 static struct ion_platform_data imx_ion_data = {
    .nr = 1,
    .heaps = {
@@ -138,6 +141,7 @@ static struct ion_platform_data imx_ion_data = {
        },
    },
 };
+#endif
 
 static struct imx_ipuv3_platform_data ipu_data[] = {
    {
@@ -318,11 +322,13 @@ static void __init mx6_board_init(void)
     imx6q_add_imx2_wdt(0, NULL);
     imx6q_add_dma();
 
+#if defined(CONFIG_ION)
     if (imx_ion_data.heaps[0].size) {
         imx6q_add_ion(0, &imx_ion_data,
             sizeof(imx_ion_data) +
             sizeof(struct ion_platform_heap));
     }
+#endif
 
     imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
     imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
@@ -382,6 +388,7 @@ static void __init mx6_board_fixup(struct machine_desc *desc, struct tag *tags,
 					memparse(str, &str);
 			}
 		}
+#if defined(CONFIG_ION)
 		/* ion reserve memory */
 		str = t->u.cmdline.cmdline;
 		str = strstr(str, "iomem=");
@@ -389,6 +396,7 @@ static void __init mx6_board_fixup(struct machine_desc *desc, struct tag *tags,
 			str += 7;
 			imx_ion_data.heaps[0].size = memparse(str, &str);
 		}
+#endif
 		/* Primary frabuffer address */
 		str = t->u.cmdline.cmdline;
 		str = strstr(str, "fb0base=");
