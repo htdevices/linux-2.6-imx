@@ -78,7 +78,6 @@ static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
    .support_18v = 1,
    .support_8bit = 0,
    .delay_line = 0,
-   .runtime_pm = 1,
    .cd_type = ESDHC_CD_CONTROLLER,
 };
 
