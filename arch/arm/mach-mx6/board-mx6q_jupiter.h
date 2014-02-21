@@ -67,6 +67,7 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_GPIO_18__GPIO_7_13,
 	/* Display control */
 	MX6Q_PAD_GPIO_9__PWM1_PWMO,
+	MX6Q_PAD_KEY_COL4__GPIO_4_14,
 	MX6Q_PAD_KEY_ROW4__GPIO_4_15,
 	/* Uart GPS IT530M */
 	MX6Q_PAD_EIM_D24__UART3_TXD,

@@ -61,6 +61,7 @@
 #define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
+#define MX6Q_JUPITER_DISP_EN	IMX_GPIO_NR(4, 14)
 #define MX6Q_JUPITER_BKLT_EN	IMX_GPIO_NR(4, 15)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
@@ -303,9 +304,12 @@ static void __init mx6_board_init(void)
     /* enable pfuze regulators */
     mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
 
+	gpio_request(MX6Q_JUPITER_DISP_EN, "disp-en0");
+	gpio_direction_output(MX6Q_JUPITER_DISP_EN, 1);
+	gpio_export(MX6Q_JUPITER_DISP_EN, 0);
 	gpio_request(MX6Q_JUPITER_BKLT_EN, "bklt-en0");
 	gpio_direction_output(MX6Q_JUPITER_BKLT_EN, 1);
-	gpio_export(MX6Q_JUPITER_BKLT_EN);
+	gpio_export(MX6Q_JUPITER_BKLT_EN, 0);
 	imx6q_add_mxc_pwm(0);
 	imx6q_add_mxc_pwm_backlight(0, &mx6q_jupiter_pwm_backight_data);
 
