@@ -449,4 +449,9 @@ struct mxs_platform_perfmon_data {
 	void (*plt_exit) (void);
 };
 
+struct mxc_crtouch_platform_data {
+	int wakeup;
+	int reset;
+};
+
 #endif /* _FSL_DEVICE_H_ */
