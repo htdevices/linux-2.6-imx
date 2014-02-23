@@ -72,13 +72,13 @@ extern char *soc_reg_id;
 extern int __init mx6q_jupiter_init_pfuze100(u32 int_gpio);
 
 static const struct esdhc_platform_data mx6q_jupiter_sd1_data __initconst = {
-   .cd_gpio = MX6Q_JUPITER_SD1_CD,
-   .wp_gpio = MX6Q_JUPITER_SD1_WP,
-   .keep_power_at_suspend = 1,
-   .support_18v = 1,
-   .support_8bit = 0,
-   .delay_line = 0,
-   .cd_type = ESDHC_CD_CONTROLLER,
+	.cd_gpio = MX6Q_JUPITER_SD1_CD,
+	.wp_gpio = MX6Q_JUPITER_SD1_WP,
+	.keep_power_at_suspend = 1,
+	.support_18v = 1,
+	.support_8bit = 0,
+	.delay_line = 0,
+	.cd_type = ESDHC_CD_CONTROLLER,
 };
 
 static const struct esdhc_platform_data mx6q_jupiter_sd4_data __initconst = {
@@ -116,13 +116,13 @@ static struct platform_device mx6q_jupiter_vmmc_reg_devices = {
 };
 
 static int mx6q_jupiter_fec_phy_init(struct phy_device *phydev) {
-   /* todo review if needed to renable phy settings */
-   return 0;
+	/* todo review if needed to renable phy settings */
+	return 0;
 }
 
 static struct fec_platform_data mx6q_jupiter_fec_data __initdata = {
-   .init = mx6q_jupiter_fec_phy_init,
-   .phy = PHY_INTERFACE_MODE_RMII,
+	.init = mx6q_jupiter_fec_phy_init,
+	.phy = PHY_INTERFACE_MODE_RMII,
 };
 
 static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
@@ -131,44 +131,44 @@ static struct viv_gpu_platform_data imx6q_gpu_pdata __initdata = {
 
 #if defined(CONFIG_ION)
 static struct ion_platform_data imx_ion_data = {
-   .nr = 1,
-   .heaps = {
-       {
-       .type = ION_HEAP_TYPE_CARVEOUT,
-       .name = "vpu_ion",
-       .size = SZ_64M,
-       },
-   },
+	.nr = 1,
+	.heaps = {
+		{
+			.type = ION_HEAP_TYPE_CARVEOUT,
+			.name = "vpu_ion",
+			.size = SZ_64M,
+		},
+	},
 };
 #endif
 
 static struct imx_ipuv3_platform_data ipu_data[] = {
-   {
-       .rev = 4,
-       .csi_clk[0] = "clko_clk",
-       .bypass_reset = false,
-   }, {
-       .rev = 4,
-       .csi_clk[0] = "clko_clk",
-       .bypass_reset = false,
-   },
+	{
+		.rev = 4,
+		.csi_clk[0] = "clko_clk",
+		.bypass_reset = false,
+	}, {
+		.rev = 4,
+		.csi_clk[0] = "clko_clk",
+		.bypass_reset = false,
+	},
 };
 
 static struct ipuv3_fb_platform_data mx6q_jupiter_fb_data[] = {
-   {
-       .disp_dev = "ldb",
-       .interface_pix_fmt = IPU_PIX_FMT_RGB666,
-       .mode_str = "LDB-XGA",
-       .default_bpp = 16,
-       .int_clk = false,
-   },
+	{
+		.disp_dev = "ldb",
+		.interface_pix_fmt = IPU_PIX_FMT_RGB666,
+		.mode_str = "LDB-XGA",
+		.default_bpp = 16,
+		.int_clk = false,
+	},
 };
 
 static struct fsl_mxc_ldb_platform_data mx6q_jupiter_ldb_data = {
-   .ipu_id = 0,
-   .disp_id = 0,
-   .ext_ref = 1,
-   .mode = LDB_SEP0,
+	.ipu_id = 0,
+	.disp_id = 0,
+	.ext_ref = 1,
+	.mode = LDB_SEP0,
 };
 
 /* Backlight PWM for Orient Display */
@@ -180,48 +180,48 @@ static struct platform_pwm_backlight_data mx6q_jupiter_pwm_backight_data = {
 };
 
 static struct mxc_dvfs_platform_data mx6q_jupiter_dvfscore_data = {
-    .reg_id = "VDDCORE",
-    .soc_id = "VDDSOC",
-    .clk1_id = "cpu_clk",
-    .clk2_id = "gpc_dvfs_clk",
-    .gpc_cntr_offset = MXC_GPC_CNTR_OFFSET,
-    .ccm_cdcr_offset = MXC_CCM_CDCR_OFFSET,
-    .ccm_cacrr_offset = MXC_CCM_CACRR_OFFSET,
-    .ccm_cdhipr_offset = MXC_CCM_CDHIPR_OFFSET,
-    .prediv_mask = 0x1F800,
-    .prediv_offset = 11,
-    .prediv_val = 3,
-    .div3ck_mask = 0xE0000000,
-    .div3ck_offset = 29,
-    .div3ck_val = 2,
-    .emac_val = 0x08,
-    .upthr_val = 25,
-    .dnthr_val = 9,
-    .pncthr_val = 33,
-    .upcnt_val = 10,
-    .dncnt_val = 10,
-    .delay_time = 80,
+	.reg_id = "VDDCORE",
+	.soc_id = "VDDSOC",
+	.clk1_id = "cpu_clk",
+	.clk2_id = "gpc_dvfs_clk",
+	.gpc_cntr_offset = MXC_GPC_CNTR_OFFSET,
+	.ccm_cdcr_offset = MXC_CCM_CDCR_OFFSET,
+	.ccm_cacrr_offset = MXC_CCM_CACRR_OFFSET,
+	.ccm_cdhipr_offset = MXC_CCM_CDHIPR_OFFSET,
+	.prediv_mask = 0x1F800,
+	.prediv_offset = 11,
+	.prediv_val = 3,
+	.div3ck_mask = 0xE0000000,
+	.div3ck_offset = 29,
+	.div3ck_val = 2,
+	.emac_val = 0x08,
+	.upthr_val = 25,
+	.dnthr_val = 9,
+	.pncthr_val = 33,
+	.upcnt_val = 10,
+	.dncnt_val = 10,
+	.delay_time = 80,
 };
 
 static const struct anatop_thermal_platform_data
-   mx6q_jupiter_anatop_thermal_data __initconst = {
-       .name = "anatop_thermal",
+mx6q_jupiter_anatop_thermal_data __initconst = {
+	.name = "anatop_thermal",
 };
 
 static void mx6q_jupiter_suspend_enter(void)
 {
-   /* enter suspend */
+	/* enter suspend */
 }
 
 static void mx6q_jupiter_suspend_exit(void)
 {
-   /* exit suspend */
+	/* exit suspend */
 }
 
 static const struct pm_platform_data mx6q_jupiter_pm_data __initconst = {
-   .name = "imx_pm",
-   .suspend_enter = mx6q_jupiter_suspend_enter,
-   .suspend_exit  = mx6q_jupiter_suspend_exit,
+	.name = "imx_pm",
+	.suspend_enter = mx6q_jupiter_suspend_enter,
+	.suspend_exit  = mx6q_jupiter_suspend_exit,
 };
 
 static inline void mx6q_jupiter_init_uart(void)
@@ -246,7 +246,7 @@ static void __init mx6q_jupiter_init_usb(void)
 	ret = gpio_request(MX6Q_JUPITER_USB_OTG_ON, "otg-on");
 	if (ret) {
 		printk(KERN_ERR "failed to get GPIO MX6Q_JUPITER_USB_OTG_ON"
-			" %d\n", ret);
+				" %d\n", ret);
 		return;
 	}
 	gpio_direction_output(MX6Q_JUPITER_USB_OTG_ON, 0);
@@ -254,7 +254,7 @@ static void __init mx6q_jupiter_init_usb(void)
 	ret = gpio_request(MX6Q_JUPITER_USB_OTG_OC, "otg-oc");
 	if (ret) {
 		printk(KERN_ERR "failed to get GPIO MX6Q_JUPITER_USB_OTG_OC:"
-			" %d\n", ret);
+				" %d\n", ret);
 		return;
 	}
 	gpio_direction_input(MX6Q_JUPITER_USB_OTG_OC);
@@ -265,19 +265,19 @@ static void __init mx6q_jupiter_init_usb(void)
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
 static struct resource ram_console_resource = {
-   .name = "android ram console",
-   .flags = IORESOURCE_MEM,
+	.name = "android ram console",
+	.flags = IORESOURCE_MEM,
 };
 
 static struct platform_device android_ram_console = {
-   .name = "ram_console",
-   .num_resources = 1,
-   .resource = &ram_console_resource,
+	.name = "ram_console",
+	.num_resources = 1,
+	.resource = &ram_console_resource,
 };
 
 static int __init imx6x_add_ram_console(void)
 {
-   return platform_device_register(&android_ram_console);
+	return platform_device_register(&android_ram_console);
 }
 #endif
 
@@ -292,20 +292,20 @@ static void __init mx6_board_init(void)
 	mx6q_jupiter_init_uart();
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
-    imx6x_add_ram_console();
+	imx6x_add_ram_console();
 #endif
 
 	imx6q_add_ipuv3(0, &ipu_data[0]);
 	imx6q_add_ipuv3(1, &ipu_data[1]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
-    imx6q_add_vdoa();
-    imx6q_add_ldb(&mx6q_jupiter_ldb_data);
-    imx6q_add_v4l2_output(0);
-    /* reuest pmic interrupt gpio */
-    gpio_request(MX6Q_JUPITER_PMIC_INT, "pfuze-int");
-    gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
-    /* enable pfuze regulators */
-    mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
+	imx6q_add_vdoa();
+	imx6q_add_ldb(&mx6q_jupiter_ldb_data);
+	imx6q_add_v4l2_output(0);
+	/* reuest pmic interrupt gpio */
+	gpio_request(MX6Q_JUPITER_PMIC_INT, "pfuze-int");
+	gpio_direction_input(MX6Q_JUPITER_PMIC_INT);
+	/* enable pfuze regulators */
+	mx6q_jupiter_init_pfuze100(MX6Q_JUPITER_PMIC_INT);
 
 	gpio_request(MX6Q_JUPITER_DISP_EN, "disp-en0");
 	gpio_direction_output(MX6Q_JUPITER_DISP_EN, 1);
@@ -316,23 +316,23 @@ static void __init mx6_board_init(void)
 	imx6q_add_mxc_pwm(0);
 	imx6q_add_mxc_pwm_backlight(0, &mx6q_jupiter_pwm_backight_data);
 
-    imx6q_add_vpu();
-    imx6q_add_otp();
-    imx6q_add_imx2_wdt(0, NULL);
-    imx6q_add_dma();
+	imx6q_add_vpu();
+	imx6q_add_otp();
+	imx6q_add_imx2_wdt(0, NULL);
+	imx6q_add_dma();
 
 #if defined(CONFIG_ION)
-    if (imx_ion_data.heaps[0].size) {
-        imx6q_add_ion(0, &imx_ion_data,
-            sizeof(imx_ion_data) +
-            sizeof(struct ion_platform_heap));
-    }
+	if (imx_ion_data.heaps[0].size) {
+		imx6q_add_ion(0, &imx_ion_data,
+				sizeof(imx_ion_data) +
+				sizeof(struct ion_platform_heap));
+	}
 #endif
 
-    imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
-    imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
-    imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
-    imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
+	imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
+	imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
+	imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
+	imx_add_viv_gpu(&imx6_gpu_data, &imx6q_gpu_pdata);
 	/* SD, eMMC as mmcblk0 */
 	imx6q_add_sdhci_usdhc_imx(3, &mx6q_jupiter_sd4_data);
 	imx6q_add_sdhci_usdhc_imx(0, &mx6q_jupiter_sd1_data);
@@ -341,11 +341,11 @@ static void __init mx6_board_init(void)
 	/* ethernet phy */
 	imx6_init_fec(mx6q_jupiter_fec_data);
 
-    imx6q_add_busfreq();
+	imx6q_add_busfreq();
 
-    imx6q_add_perfmon(0);
-    imx6q_add_perfmon(1);
-    imx6q_add_perfmon(2);
+	imx6q_add_perfmon(0);
+	imx6q_add_perfmon(1);
+	imx6q_add_perfmon(2);
 }
 
 extern void __iomem *twd_base;
@@ -375,44 +375,46 @@ static void __init mx6_board_fixup(struct machine_desc *desc, struct tag *tags,
 	struct ipuv3_fb_platform_data *pdata_fb = mx6q_jupiter_fb_data;
 
 	for_each_tag(t, tags) {
-	if (t->hdr.tag == ATAG_CMDLINE) {
-		str = t->u.cmdline.cmdline;
-		str = strstr(str, "fbmem=");
-		if (str != NULL) {
-			str += 6;
-			pdata_fb[i++].res_size[0] = memparse(str, &str);
-			while (*str == ',' && i < ARRAY_SIZE(mx6q_jupiter_fb_data)) {
-				str++;
-				mx6q_jupiter_fb_data[i++].res_size[0] =
+		if (t->hdr.tag == ATAG_CMDLINE) {
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "fbmem=");
+			if (str != NULL) {
+				str += 6;
+				pdata_fb[i++].res_size[0] = memparse(str, &str);
+				while (*str == ',' &&
+					i < ARRAY_SIZE(mx6q_jupiter_fb_data)) {
+					str++;
+					mx6q_jupiter_fb_data[i++].res_size[0] =
+						memparse(str, &str);
+				}
+			}
+#if defined(CONFIG_ION)
+			/* ion reserve memory */
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "iomem=");
+			if (str != NULL) {
+				str += 7;
+				imx_ion_data.heaps[0].size = memparse(str, &str);
+			}
+#endif
+			/* Primary frabuffer address */
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "fb0base=");
+			if (str != NULL) {
+				str += 8;
+				pdata_fb[0].res_base[0] =
+					simple_strtol(str, &str, 16);
+			}
+			/* GPU reserve memory */
+			str = t->u.cmdline.cmdline;
+			str = strstr(str, "gpumem=");
+			if (str != NULL) {
+				str += 7;
+				imx6q_gpu_pdata.reserved_mem_size =
 					memparse(str, &str);
 			}
+			break;
 		}
-#if defined(CONFIG_ION)
-		/* ion reserve memory */
-		str = t->u.cmdline.cmdline;
-		str = strstr(str, "iomem=");
-		if (str != NULL) {
-			str += 7;
-			imx_ion_data.heaps[0].size = memparse(str, &str);
-		}
-#endif
-		/* Primary frabuffer address */
-		str = t->u.cmdline.cmdline;
-		str = strstr(str, "fb0base=");
-		if (str != NULL) {
-			str += 8;
-			pdata_fb[0].res_base[0] =
-				simple_strtol(str, &str, 16);
-		}
-		/* GPU reserve memory */
-		str = t->u.cmdline.cmdline;
-		str = strstr(str, "gpumem=");
-		if (str != NULL) {
-			str += 7;
-			imx6q_gpu_pdata.reserved_mem_size = memparse(str, &str);
-		}
-		break;
-	}
 	}
 }
 
@@ -421,15 +423,14 @@ static void __init mx6q_reserve(void)
 	phys_addr_t phys;
 
 #ifdef CONFIG_ANDROID_RAM_CONSOLE
-    phys = memblock_alloc_base(SZ_128K, SZ_4K, SZ_1G);
-    memblock_remove(phys, SZ_128K);
-    memblock_free(phys, SZ_128K);
-    ram_console_resource.start = phys;
-    ram_console_resource.end   = phys + SZ_128K - 1;
+	phys = memblock_alloc_base(SZ_128K, SZ_4K, SZ_1G);
+	memblock_remove(phys, SZ_128K);
+	memblock_free(phys, SZ_128K);
+	ram_console_resource.start = phys;
+	ram_console_resource.end   = phys + SZ_128K - 1;
 #endif
 
 #if defined(CONFIG_MXC_GPU_VIV) || defined(CONFIG_MXC_GPU_VIV_MODULE)
-
 	if (imx6q_gpu_pdata.reserved_mem_size) {
 		phys = memblock_alloc_base(imx6q_gpu_pdata.reserved_mem_size,
 				SZ_4K, SZ_1G);
@@ -439,12 +440,12 @@ static void __init mx6q_reserve(void)
 #endif
 
 #if defined(CONFIG_ION)
-    if (imx_ion_data.heaps[0].size) {
-        phys = memblock_alloc(imx_ion_data.heaps[0].size, SZ_4K);
-        memblock_free(phys, imx_ion_data.heaps[0].size);
-        memblock_remove(phys, imx_ion_data.heaps[0].size);
-        imx_ion_data.heaps[0].base = phys;
-    }
+	if (imx_ion_data.heaps[0].size) {
+		phys = memblock_alloc(imx_ion_data.heaps[0].size, SZ_4K);
+		memblock_free(phys, imx_ion_data.heaps[0].size);
+		memblock_remove(phys, imx_ion_data.heaps[0].size);
+		imx_ion_data.heaps[0].base = phys;
+	}
 #endif
 }
 
