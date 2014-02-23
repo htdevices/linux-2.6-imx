@@ -39,6 +39,7 @@
 #include <linux/syscalls.h>
 #include <linux/cdev.h>
 #include <linux/device.h>
+#include <linux/fsl_devices.h>
 
 /*keys reported to input device
 --capacitive--
@@ -220,6 +221,7 @@ struct crtouch_data {
 	struct work_struct 	work;
 	struct input_dev 	*input_dev;
 	struct i2c_client 	*client;
+	struct mxc_crtouch_platform_data *pdata;
 };
 
 int xmax = 0;

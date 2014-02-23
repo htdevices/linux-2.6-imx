@@ -768,9 +768,16 @@ static void tsc_poll_handler(unsigned long arg)
 #ifdef WAKE_SIGNAL
 static int crtouch_resume(struct i2c_client *client)
 {
-	gpio_set_value(PIN_WAKE, GND);
-	udelay(10);
-	gpio_set_value(PIN_WAKE, VCC);
+	if (client->dev.platform_data)
+	{
+		gpio_set_value(crtouch->pdata->wakeup, GND);
+		udelay(10);
+		gpio_set_value(crtouch->pdata->wakeup, VCC);
+	} else {
+		gpio_set_value(PIN_WAKE, GND);
+		udelay(10);
+		gpio_set_value(PIN_WAKE, VCC);
+	}
 	return 0;
 }
 
@@ -794,7 +801,6 @@ static int __devinit crtouch_probe(struct i2c_client *client,
 	int error = 0;
 	s32 mask_trigger = 0;
 
-
 	/*to be able to communicate by i2c with crtouch (dev)*/
 	client_public = client;
 
@@ -811,6 +817,11 @@ static int __devinit crtouch_probe(struct i2c_client *client,
 
 	crtouch->input_dev = input_dev;
 	crtouch->client = client;
+	if (client->dev.platform_data) {
+		memcpy(&crtouch->pdata, client->dev.platform_data,
+				sizeof(crtouch->pdata));
+	}
+
 	crtouch->workqueue = create_singlethread_workqueue("crtouch");
 	INIT_WORK(&crtouch->work, report_MT);
 
@@ -905,47 +916,69 @@ static int __devinit crtouch_probe(struct i2c_client *client,
 	}
 
 #ifdef WAKE_SIGNAL
-	result = gpio_request(PIN_WAKE, "GPIO_WAKE_CRTOUCH");
+	if (crtouch->pdata->wakeup)
+		result = gpio_request(crtouch->pdata->wakeup,
+				"GPIO_WAKE_CRTOUCH");
+	else
+		result = gpio_request(PIN_WAKE, "GPIO_WAKE_CRTOUCH");
 
 	if (result != 0) {
 		printk(KERN_DEBUG "error requesting GPIO %d\n", result);
 		goto err_unr_createdev;
 	}
 
-	result = gpio_direction_output(PIN_WAKE, GPIOF_OUT_INIT_HIGH);
+	if (crtouch->pdata->wakeup)
+		result = gpio_direction_output(crtouch->pdata->wakeup,
+				GPIOF_OUT_INIT_HIGH);
+	else
+		result = gpio_direction_output(PIN_WAKE, GPIOF_OUT_INIT_HIGH);
 
 	if (result != 0) {
 		printk(KERN_DEBUG "error config GPIO PIN direction %d\n", result);
 		goto err_free_pin;
 	}
 
-	gpio_set_value(PIN_WAKE, VCC);
+	if (crtouch->pdata->wakeup)
+		gpio_set_value(crtouch->pdata->wakeup, VCC);
+	else
+		gpio_set_value(PIN_WAKE, VCC);
 #endif /* WAKE_SIGNAL */
 
 
 #ifdef IRQ_EVENT_HANDLING
 	/*request gpio to used as interrupt*/
-	result = gpio_request(GPIO_IRQ, "GPIO_INTERRUPT_CRTOUCH");
-
-	if (result != 0) {
-		printk(KERN_DEBUG "error requesting GPIO for IRQ %d\n", result);
-		goto err_free_pin;
-	}
-
-	result = gpio_direction_input(GPIO_IRQ);
-
-	if (result != 0) {
-		printk(KERN_DEBUG "error config IRQ PIN direction %d\n", result);
-		goto err_free_pinIrq;
-	}
-
-	/* request irq trigger falling */
-	result = request_irq(gpio_to_irq(GPIO_IRQ), crtouch_irq,
+	if (client->irq) {
+		/* request irq trigger falling */
+		result = request_irq(client->irq, crtouch_irq,
 				IRQF_TRIGGER_FALLING, IRQ_NAME, crtouch_irq);
 
-	if (result < 0) {
-		printk(KERN_DEBUG "unable to request IRQ\n");
-		goto err_free_pinIrq;
+		if (result < 0) {
+			printk(KERN_DEBUG "unable to request IRQ\n");
+			goto err_unr_createdev;
+		}
+	} else {
+		result = gpio_request(GPIO_IRQ, "GPIO_INTERRUPT_CRTOUCH");
+
+		if (result != 0) {
+			printk(KERN_DEBUG "error requesting GPIO for IRQ %d\n", result);
+			goto err_free_pin;
+		}
+
+		result = gpio_direction_input(GPIO_IRQ);
+
+		if (result != 0) {
+			printk(KERN_DEBUG "error config IRQ PIN direction %d\n", result);
+			goto err_free_pinIrq;
+		}
+
+		/* request irq trigger falling */
+		result = request_irq(gpio_to_irq(GPIO_IRQ), crtouch_irq,
+				IRQF_TRIGGER_FALLING, IRQ_NAME, crtouch_irq);
+
+		if (result < 0) {
+			printk(KERN_DEBUG "unable to request IRQ\n");
+			goto err_free_pinIrq;
+		}
 	}
 #else /* IRQ_EVENT_HANDLING */
 	/*
@@ -1002,11 +1035,16 @@ static int __devexit crtouch_remove(struct i2c_client *client)
 	input_free_device(crtouch->input_dev);
 	unregister_chrdev_region(dev_number, 1);
 #ifdef IRQ_EVENT_HANDLING
-	free_irq(gpio_to_irq(GPIO_IRQ), crtouch_irq);
-	gpio_free(GPIO_IRQ);
+	if (client->irq)
+		free_irq(client->irq, crtouch);
+	else {
+		free_irq(gpio_to_irq(GPIO_IRQ), crtouch_irq);
+		gpio_free(GPIO_IRQ);
+	}
 #endif /* IRQ_EVENT_HANDLING */
 #ifdef WAKE_SIGNAL
-	gpio_free(PIN_WAKE);
+	if (!crtouch->pdata->wakeup)
+		gpio_free(PIN_WAKE);
 #endif /* WAKE_SIGNAL */
 	kfree(crtouch);
 
