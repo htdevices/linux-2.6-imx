@@ -60,11 +60,14 @@
 
 #define MX6Q_JUPITER_USB_OTG_ON IMX_GPIO_NR(3, 16)
 #define MX6Q_JUPITER_USB_OTG_OC IMX_GPIO_NR(3, 17)
+#define MX6Q_JUPITER_CRTOUCH_IRQ IMX_GPIO_NR(3, 18)
 #define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
+#define MX6Q_JUPITER_CRTOUCH_WK IMX_GPIO_NR(4, 5)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
 #define MX6Q_JUPITER_DISP_EN	IMX_GPIO_NR(4, 14)
 #define MX6Q_JUPITER_BKLT_EN	IMX_GPIO_NR(4, 15)
+#define MX6Q_JUPITER_CRTOUCH_RST IMX_GPIO_NR(7, 4)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
 extern char *gp_reg_id;
@@ -112,6 +115,23 @@ static struct platform_device mx6q_jupiter_vmmc_reg_devices = {
 	.id = 3,
 	.dev = {
 		.platform_data = &mx6q_jupiter_vmmc_reg_config,
+	},
+};
+
+static struct mxc_crtouch_platform_data mx6q_jupiter_crtouch_pdata = {
+	.wakeup = MX6Q_JUPITER_CRTOUCH_WK,
+	.reset = MX6Q_JUPITER_CRTOUCH_RST,
+};
+
+static struct imxi2c_platform_data mx6q_jupiter_i2c_data = {
+	.bitrate = 100000,
+};
+
+static struct i2c_board_info mx6q_jupiter_i2c3_board_info[] __initdata = {
+	{
+		I2C_BOARD_INFO("crtouch_drv", 0x49),
+		.platform_data = (void *)&mx6q_jupiter_crtouch_pdata,
+		.irq = gpio_to_irq(MX6Q_JUPITER_CRTOUCH_IRQ),
 	},
 };
 
@@ -295,6 +315,9 @@ static void __init mx6_board_init(void)
 	imx6x_add_ram_console();
 #endif
 
+	imx6q_add_imx_i2c(3, &mx6q_jupiter_i2c_data);
+	i2c_register_board_info(3, mx6q_jupiter_i2c3_board_info,
+			ARRAY_SIZE(mx6q_jupiter_i2c3_board_info));
 	imx6q_add_ipuv3(0, &ipu_data[0]);
 	imx6q_add_ipuv3(1, &ipu_data[1]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);

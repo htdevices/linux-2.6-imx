@@ -89,6 +89,10 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_GPIO_1__USBOTG_ID,
 	MX6Q_PAD_EIM_D16__GPIO_3_16,
 	MX6Q_PAD_EIM_D17__GPIO_3_17,
+	/* CRTouch interrupt and reset gpio */
+	MX6Q_PAD_EIM_D18__GPIO_3_18,
+	MX6Q_PAD_GPIO_19__GPIO_4_5,
+	MX6Q_PAD_SD3_DAT0__GPIO_7_4,
 };
 
 #endif
