@@ -43,7 +43,9 @@
 #if defined(CONFIG_ION)
 #include <linux/ion.h>
 #endif
+#include <linux/input.h>
 #include <linux/gpio.h>
+#include <linux/gpio_keys.h>
 
 #include <mach/ipu-v3.h>
 #include <mach/viv_gpu.h>
@@ -58,6 +60,9 @@
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
+#define MX6Q_JUPITER_VOLUME_DN	IMX_GPIO_NR(2, 23)
+#define MX6Q_JUPITER_VOLUME_UP	IMX_GPIO_NR(2, 24)
+#define MX6Q_JUPITER_POWER_OFF	IMX_GPIO_NR(2, 25)
 #define MX6Q_JUPITER_USB_OTG_ON IMX_GPIO_NR(3, 16)
 #define MX6Q_JUPITER_USB_OTG_OC IMX_GPIO_NR(3, 17)
 #define MX6Q_JUPITER_CRTOUCH_IRQ IMX_GPIO_NR(3, 18)
@@ -117,6 +122,46 @@ static struct platform_device mx6q_jupiter_vmmc_reg_devices = {
 		.platform_data = &mx6q_jupiter_vmmc_reg_config,
 	},
 };
+
+#if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
+#define GPIO_BUTTON(gpio_num, ev_code, act_low, descr, wake, debounce)  \
+{								\
+        .gpio           = gpio_num,                             \
+        .type           = EV_KEY,                               \
+        .code           = ev_code,                              \
+        .active_low     = act_low,                              \
+        .desc           = "btn " descr,                         \
+        .wakeup         = wake,                                 \
+        .debounce_interval = debounce,                          \
+}
+
+static struct gpio_keys_button mx6q_jupiter_buttons[] = {
+        GPIO_BUTTON(MX6Q_JUPITER_VOLUME_UP, KEY_VOLUMEUP, 1, "volume-up", 0, 1),
+        GPIO_BUTTON(MX6Q_JUPITER_VOLUME_DN, KEY_VOLUMEDOWN, 1, "volume-down", 0, 1),
+        GPIO_BUTTON(MX6Q_JUPITER_POWER_OFF, KEY_POWER, 1, "power", 1, 1),
+};
+
+static struct gpio_keys_platform_data mx6q_jupiter_button_data = {
+        .buttons        = mx6q_jupiter_buttons,
+        .nbuttons       = ARRAY_SIZE(mx6q_jupiter_buttons),
+};
+
+static struct platform_device mx6q_jupiter_button_device = {
+        .name           = "gpio-keys",
+        .id             = -1,
+        .num_resources  = 0,
+        .dev            = {
+	        .platform_data = &mx6q_jupiter_button_data,
+	}
+};
+
+static void __init mx6q_jupiter_add_device_buttons(void)
+{
+        platform_device_register(&mx6q_jupiter_button_device);
+}
+#else
+static void __init mx6q_jupiter_add_device_buttons(void) {}
+#endif
 
 static struct mxc_crtouch_platform_data mx6q_jupiter_crtouch_pdata = {
 	.wakeup = MX6Q_JUPITER_CRTOUCH_WK,
@@ -343,6 +388,7 @@ static void __init mx6_board_init(void)
 	imx6q_add_otp();
 	imx6q_add_imx2_wdt(0, NULL);
 	imx6q_add_dma();
+	mx6q_jupiter_add_device_buttons();
 
 #if defined(CONFIG_ION)
 	if (imx_ion_data.heaps[0].size) {

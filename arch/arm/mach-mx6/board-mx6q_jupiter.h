@@ -93,6 +93,10 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_EIM_D18__GPIO_3_18,
 	MX6Q_PAD_GPIO_19__GPIO_4_5,
 	MX6Q_PAD_SD3_DAT0__GPIO_7_4,
+	/* Android key buttons */
+	MX6Q_PAD_EIM_CS0__GPIO_2_23,
+	MX6Q_PAD_EIM_CS1__GPIO_2_24,
+	MX6Q_PAD_EIM_OE__GPIO_2_25,
 };
 
 #endif
