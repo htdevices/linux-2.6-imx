@@ -57,9 +57,6 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_ENET_TXD1__ENET_TDATA_1,
 	MX6Q_PAD_ENET_CRS_DV__ENET_RX_EN,
 	MX6Q_PAD_GPIO_16__ENET_ANATOP_ETHERNET_REF_OUT,
-	/* I2C2 */
-	MX6Q_PAD_KEY_COL3__I2C2_SCL,
-	MX6Q_PAD_KEY_ROW3__I2C2_SDA,
 	/* I2C3 */
 	MX6Q_PAD_GPIO_6__I2C3_SDA,
 	MX6Q_PAD_GPIO_3__I2C3_SCL,
@@ -97,6 +94,11 @@ static iomux_v3_cfg_t mx6q_jupiter_pads[] = {
 	MX6Q_PAD_EIM_CS0__GPIO_2_23,
 	MX6Q_PAD_EIM_CS1__GPIO_2_24,
 	MX6Q_PAD_EIM_OE__GPIO_2_25,
+};
+
+static iomux_v3_cfg_t mx6q_jupiter_i2c2_pads[] = {
+	MX6Q_PAD_KEY_COL3__I2C2_SCL,
+	MX6Q_PAD_KEY_ROW3__I2C2_SDA,
 };
 
 #endif
