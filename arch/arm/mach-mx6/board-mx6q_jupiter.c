@@ -37,6 +37,7 @@
 #include <linux/regulator/fixed.h>
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
+#include <linux/mfd/mxc-hdmi-core.h>
 #include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
 #include <linux/fec.h>
@@ -53,6 +54,7 @@
 #include <mach/hardware.h>
 #include <mach/iomux-mx6q.h>
 #include <mach/iomux-v3.h>
+#include <mach/mxc_hdmi.h>
 #include <mach/mxc_dvfs.h>
 
 #include "crm_regs.h"
@@ -225,6 +227,54 @@ static struct imx_ipuv3_platform_data ipu_data[] = {
 	},
 };
 
+static void mx6q_jupiter_hdmi_init(int ipu_id, int disp_id)
+{
+	int hdmi_mux_settings;
+
+	if ((ipu_id > 1) || (ipu_id < 0)) {
+		pr_err("Invalid IPU select for HDMI: %d. Seto to 0\n", ipu_id);
+		ipu_id = 0;
+	}
+
+	if ((disp_id > 1) || (disp_id < 0)) {
+		pr_err("Invalid DI select for HDMI: %d. Set to 0\n", disp_id);
+		disp_id = 0;
+	}
+
+	/* Configure the connection between IPU1/2 and HDMI */
+	hdmi_mux_settings = 2*ipu_id + disp_id;
+
+	/* GPR3, bits 2-3 = HDMI_MUX_CTL */
+	mxc_iomux_set_gpr_register(3, 2, 2, hdmi_mux_settings);
+	/* Set HDMI event as SDMA event2 while Chip version later than TO1.2 */
+	if (hdmi_SDMA_check())
+		mxc_iomux_set_gpr_register(0, 0, 1, 1);
+
+}
+
+static void mx6q_jupiter_hdmi_enable_ddc_pin(void)
+{
+	mxc_iomux_v3_setup_multiple_pads(mx6q_jupiter_hdmi_ddc_pads,
+			ARRAY_SIZE(mx6q_jupiter_hdmi_ddc_pads));
+}
+
+static void mx6q_jupiter_hdmi_disable_ddc_pin(void)
+{
+	mxc_iomux_v3_setup_multiple_pads(mx6q_jupiter_i2c2_pads,
+			ARRAY_SIZE(mx6q_jupiter_i2c2_pads));
+}
+
+static struct fsl_mxc_hdmi_platform_data mx6q_jupiter_hdmi_data = {
+	.init = mx6q_jupiter_hdmi_init,
+	.enable_pins = mx6q_jupiter_hdmi_enable_ddc_pin,
+	.disable_pins = mx6q_jupiter_hdmi_disable_ddc_pin,
+};
+
+static struct fsl_mxc_hdmi_core_platform_data mx6q_jupiter_hdmi_core_data = {
+	.ipu_id = 0,
+	.disp_id = 0,
+};
+
 static struct ipuv3_fb_platform_data mx6q_jupiter_fb_data[] = {
 	{
 		.disp_dev = "ldb",
@@ -374,6 +424,7 @@ static void __init mx6_board_init(void)
 	imx6q_add_imx_i2c(3, &mx6q_jupiter_i2c_data);
 	i2c_register_board_info(3, mx6q_jupiter_i2c3_board_info,
 			ARRAY_SIZE(mx6q_jupiter_i2c3_board_info));
+	imx6q_add_mxc_hdmi_core(&mx6q_jupiter_hdmi_core_data);
 	imx6q_add_ipuv3(0, &ipu_data[0]);
 	imx6q_add_ipuv3(1, &ipu_data[1]);
 	imx6q_add_ipuv3fb(0, &mx6q_jupiter_fb_data[0]);
@@ -408,7 +459,7 @@ static void __init mx6_board_init(void)
 				sizeof(struct ion_platform_heap));
 	}
 #endif
-
+	imx6q_add_mxc_hdmi(&mx6q_jupiter_hdmi_data);
 	imx6q_add_dvfs_core(&mx6q_jupiter_dvfscore_data);
 	imx6q_add_anatop_thermal_imx(1, &mx6q_jupiter_anatop_thermal_data);
 	imx6q_add_pm_imx(0, &mx6q_jupiter_pm_data);
@@ -420,6 +471,8 @@ static void __init mx6_board_init(void)
 	mx6q_jupiter_init_usb();
 	/* ethernet phy */
 	imx6_init_fec(mx6q_jupiter_fec_data);
+	imx6q_add_hdmi_soc();
+	imx6q_add_hdmi_soc_dai();
 
 	imx6q_add_busfreq();
 

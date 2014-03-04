@@ -101,4 +101,9 @@ static iomux_v3_cfg_t mx6q_jupiter_i2c2_pads[] = {
 	MX6Q_PAD_KEY_ROW3__I2C2_SDA,
 };
 
+static iomux_v3_cfg_t mx6q_jupiter_hdmi_ddc_pads[] = {
+	MX6Q_PAD_KEY_COL3__HDMI_TX_DDC_SCL,
+	MX6Q_PAD_KEY_ROW3__HDMI_TX_DDC_SDA,
+};
+
 #endif
