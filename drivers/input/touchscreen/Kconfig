@@ -796,4 +796,8 @@ config TOUCHSCREEN_CRTOUCH_MT
 	help
 	  Say Y here if you have a Freescale CRTouch-based
 	  touchscreen connected via I2C.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called egalax_ts.
+
 endif
