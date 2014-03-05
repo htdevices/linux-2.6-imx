@@ -185,6 +185,8 @@ static struct i2c_board_info mx6q_jupiter_i2c3_board_info[] __initdata = {
 		I2C_BOARD_INFO("crtouch_drv", 0x49),
 		.platform_data = (void *)&mx6q_jupiter_crtouch_pdata,
 		.irq = gpio_to_irq(MX6Q_JUPITER_CRTOUCH_IRQ),
+	}, {
+		I2C_BOARD_INFO("lsm303d", 0x3A),
 	},
 };
 
