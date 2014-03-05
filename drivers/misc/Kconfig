@@ -384,6 +384,15 @@ config SENSORS_APDS990X
 	   To compile this driver as a module, choose M here: the
 	   module will be called apds990x. If unsure, say N here.
 
+config SENSORS_LSM303D
+	tristate "LSM303D sensor driver"
+	depends on I2C && SYSFS
+	help
+	  Say Y here to suppor the sensor LSM303D.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called lsm303d. If unsure, say N here.
+
 config HMC6352
 	tristate "Honeywell HMC6352 compass"
 	depends on I2C
