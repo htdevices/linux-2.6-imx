@@ -286,10 +286,12 @@ static struct ipuv3_fb_platform_data mx6q_jupiter_fb_data[] = {
 };
 
 static struct fsl_mxc_ldb_platform_data mx6q_jupiter_ldb_data = {
-	.ipu_id = 0,
+	.ipu_id = 1,
 	.disp_id = 0,
 	.ext_ref = 1,
 	.mode = LDB_SEP0,
+	.sec_ipu_id = 1,
+	.sec_disp_id = 1,
 };
 
 /* Backlight PWM for Orient Display */
