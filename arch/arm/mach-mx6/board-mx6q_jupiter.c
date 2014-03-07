@@ -422,11 +422,11 @@ static void __init mx6_board_init(void)
 	imx6x_add_ram_console();
 #endif
 
-	imx6q_add_imx_i2c(2, &mx6q_jupiter_i2c_data);
-	i2c_register_board_info(2, mx6q_jupiter_i2c2_board_info,
+	imx6q_add_imx_i2c(1, &mx6q_jupiter_i2c_data);
+	i2c_register_board_info(1, mx6q_jupiter_i2c2_board_info,
 			ARRAY_SIZE(mx6q_jupiter_i2c2_board_info));
-	imx6q_add_imx_i2c(3, &mx6q_jupiter_i2c_data);
-	i2c_register_board_info(3, mx6q_jupiter_i2c3_board_info,
+	imx6q_add_imx_i2c(2, &mx6q_jupiter_i2c_data);
+	i2c_register_board_info(2, mx6q_jupiter_i2c3_board_info,
 			ARRAY_SIZE(mx6q_jupiter_i2c3_board_info));
 	imx6q_add_mxc_hdmi_core(&mx6q_jupiter_hdmi_core_data);
 	imx6q_add_ipuv3(0, &ipu_data[0]);
