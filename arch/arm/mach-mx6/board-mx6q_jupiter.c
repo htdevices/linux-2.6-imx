@@ -72,8 +72,9 @@
 #define MX6Q_JUPITER_USB_OTG_ON IMX_GPIO_NR(3, 16)
 #define MX6Q_JUPITER_USB_OTG_OC IMX_GPIO_NR(3, 17)
 #define MX6Q_JUPITER_CRTOUCH_IRQ IMX_GPIO_NR(3, 18)
-#define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 29)
+#define MX6Q_JUPITER_GPS_ON 	IMX_GPIO_NR(3, 22)
 #define MX6Q_JUPITER_CRTOUCH_WK IMX_GPIO_NR(4, 5)
+#define MX6Q_JUPITER_GPS_RST	IMX_GPIO_NR(4, 7)
 #define MX6Q_JUPITER_SD1_WP 	IMX_GPIO_NR(4, 9)
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
 #define MX6Q_JUPITER_DISP_EN	IMX_GPIO_NR(4, 14)
@@ -560,6 +561,13 @@ static void __init mx6_board_init(void)
 	gpio_export(MX6Q_JUPITER_BKLT_EN, 0);
 	imx6q_add_mxc_pwm(0);
 	imx6q_add_mxc_pwm_backlight(0, &mx6q_jupiter_pwm_backight_data);
+
+	gpio_request(MX6Q_JUPITER_GPS_RST, "gps-rst");
+	gpio_direction_output(MX6Q_JUPITER_GPS_RST, 0);
+	gpio_export(MX6Q_JUPITER_GPS_RST, 0);
+	gpio_request(MX6Q_JUPITER_GPS_ON, "gps-on");
+	gpio_direction_output(MX6Q_JUPITER_GPS_ON, 1);
+	gpio_export(MX6Q_JUPITER_GPS_ON, 0);
 
 	imx6q_add_vpu();
 	imx6q_add_otp();
