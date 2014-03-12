@@ -38,6 +38,8 @@
 #include <linux/regulator/consumer.h>
 #include <linux/regulator/machine.h>
 #include <linux/mfd/mxc-hdmi-core.h>
+#include <linux/mfd/wm8994/gpio.h>
+#include <linux/mfd/wm8994/pdata.h>
 #include <linux/regulator/anatop-regulator.h>
 #include <linux/phy.h>
 #include <linux/fec.h>
@@ -47,6 +49,7 @@
 #include <linux/input.h>
 #include <linux/gpio.h>
 #include <linux/gpio_keys.h>
+#include <sound/wm8962.h>
 
 #include <mach/ipu-v3.h>
 #include <mach/viv_gpu.h>
@@ -62,6 +65,7 @@
 #include "usb.h"
 #include "board-mx6q_jupiter.h"
 
+#define MX6Q_JUPITER_CODEC_PWR	IMX_GPIO_NR(1, 5)
 #define MX6Q_JUPITER_VOLUME_DN	IMX_GPIO_NR(2, 23)
 #define MX6Q_JUPITER_VOLUME_UP	IMX_GPIO_NR(2, 24)
 #define MX6Q_JUPITER_POWER_OFF	IMX_GPIO_NR(2, 25)
@@ -74,9 +78,12 @@
 #define MX6Q_JUPITER_SD1_CD 	IMX_GPIO_NR(4, 11)
 #define MX6Q_JUPITER_DISP_EN	IMX_GPIO_NR(4, 14)
 #define MX6Q_JUPITER_BKLT_EN	IMX_GPIO_NR(4, 15)
+#define MX6Q_JUPITER_CODEC_MIC	IMX_GPIO_NR(7, 0)
+#define MX6Q_JUPITER_CODEC_HEAD IMX_GPIO_NR(7, 1)
 #define MX6Q_JUPITER_CRTOUCH_RST IMX_GPIO_NR(7, 4)
 #define MX6Q_JUPITER_PMIC_INT 	IMX_GPIO_NR(7, 13)
 
+static struct clk *clko2;
 extern char *gp_reg_id;
 extern char *soc_reg_id;
 extern int __init mx6q_jupiter_init_pfuze100(u32 int_gpio);
@@ -124,6 +131,107 @@ static struct platform_device mx6q_jupiter_vmmc_reg_devices = {
 		.platform_data = &mx6q_jupiter_vmmc_reg_config,
 	},
 };
+
+static struct imx_ssi_platform_data mx6q_jupiter_ssi_pdata = {
+	.flags = IMX_SSI_DMA | IMX_SSI_SYN,
+};
+
+static struct platform_device mx6q_jupiter_audio_wm8962_device = {
+	.name = "imx-wm8962",
+};
+
+static struct mxc_audio_platform_data mx6q_jupiter_wm8962_data;
+
+static int mx6q_jupiter_wm8962_clk_enable(int enable)
+{
+	if (enable)
+		clk_enable(clko2);
+	else
+		clk_disable(clko2);
+
+	return 0;
+}
+
+static int mx6q_jupiter_wm8962_init(void)
+{
+	int rate;
+
+	clko2 = clk_get(NULL, "clko2_clk");
+	if (IS_ERR(clko2)) {
+		pr_err("can't get CLKO2 clock.\n");
+		return PTR_ERR(clko2);
+	}
+
+	rate = clk_round_rate(clko2, 24000000);
+	mx6q_jupiter_wm8962_data.sysclk = rate;
+	clk_set_rate(clko2, rate);
+
+	return 0;
+}
+
+static struct wm8962_pdata mx6q_jupiter_wm8962_config_data = {
+	.gpio_init = {
+		[2] = WM8962_GPIO_FN_DMICCLK,
+		[4] = 0x8000 | WM8962_GPIO_FN_DMICDAT,
+	},
+};
+
+static struct mxc_audio_platform_data mx6q_jupiter_wm8962_data = {
+	.ssi_num = 1,
+	.src_port = 2,
+	.ext_port = 4,
+	.hp_gpio = MX6Q_JUPITER_CODEC_HEAD,
+	.hp_active_low = 1,
+	.mic_gpio = MX6Q_JUPITER_CODEC_MIC,
+	.mic_active_low = 1,
+	.init = mx6q_jupiter_wm8962_init,
+	.clock_enable = mx6q_jupiter_wm8962_clk_enable,
+};
+
+static struct regulator_consumer_supply mx6q_jupiter_reg_wm8962_consumers[] = {
+	REGULATOR_SUPPLY("SPKVDD1", "1-001a"),
+	REGULATOR_SUPPLY("SPKVDD2", "1-001a"),
+};
+
+static struct regulator_init_data mx6q_jupiter_reg_wm8962_init = {
+	.constraints = {
+		.name = "SPKVDD",
+		.valid_ops_mask = REGULATOR_CHANGE_STATUS,
+		.boot_on = 1,
+	},
+	.num_consumer_supplies = ARRAY_SIZE(mx6q_jupiter_reg_wm8962_consumers),
+	.consumer_supplies = mx6q_jupiter_reg_wm8962_consumers,
+};
+
+static struct fixed_voltage_config mx6q_jupiter_reg_wm8962_reg_config = {
+	.supply_name = "SPKVDD",
+	.microvolts = 4200000,
+	.gpio = MX6Q_JUPITER_CODEC_PWR,
+	.enable_high = 1,
+	.enabled_at_boot = 1,
+	.init_data = &mx6q_jupiter_reg_wm8962_init,
+};
+
+static struct platform_device mx6q_jupiter_wm8962_reg_devices = {
+	.name = "reg-fixed-voltage",
+	.id = 4,
+	.dev = {
+		.platform_data = &mx6q_jupiter_reg_wm8962_reg_config,
+	},
+};
+
+static int __init imx6q_add_audio(void)
+{
+	/* add wm8962 audio */
+	platform_device_register(&mx6q_jupiter_wm8962_reg_devices);
+	mxc_register_device(&mx6q_jupiter_audio_wm8962_device,
+			&mx6q_jupiter_wm8962_data);
+	imx6q_add_imx_ssi(1, &mx6q_jupiter_ssi_pdata);
+
+	mx6q_jupiter_wm8962_init();
+
+	return 0;
+}
 
 #if defined(CONFIG_KEYBOARD_GPIO) || defined(CONFIG_KEYBOARD_GPIO_MODULE)
 #define GPIO_BUTTON(gpio_num, ev_code, act_low, descr, wake, debounce)  \
@@ -177,6 +285,9 @@ static struct imxi2c_platform_data mx6q_jupiter_i2c_data = {
 static struct i2c_board_info mx6q_jupiter_i2c2_board_info[] __initdata = {
 	{
 		I2C_BOARD_INFO("mxc_hdmi_i2c", 0x50),
+	}, {
+		I2C_BOARD_INFO("wm8962", 0x1a),
+		.platform_data = (void *)&mx6q_jupiter_wm8962_config_data,
 	},
 };
 
@@ -477,6 +588,7 @@ static void __init mx6_board_init(void)
 	imx6_init_fec(mx6q_jupiter_fec_data);
 	imx6q_add_hdmi_soc();
 	imx6q_add_hdmi_soc_dai();
+	imx6q_add_audio();
 
 	imx6q_add_busfreq();
 
